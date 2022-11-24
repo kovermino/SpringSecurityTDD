@@ -1,4 +1,4 @@
-package com.flab.securitydemo.user.exception;
+package com.joel.springsecuritytdd.user.exception;
 
 public class UserException extends RuntimeException {
     public UserException(String message) {

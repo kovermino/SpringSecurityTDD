@@ -1,37 +1,39 @@
-package com.flab.securitydemo.user.service;
+package com.joel.springsecuritytdd.user.service;
 
-import com.flab.securitydemo.auth.domain.UserRole;
-import com.flab.securitydemo.user.dto.UserDto;
-import com.flab.securitydemo.user.entity.UserEntity;
-import com.flab.securitydemo.user.exception.UserException;
-import com.flab.securitydemo.user.mock.SpyStubUserStore;
-import org.junit.jupiter.api.Assertions;
+import com.joel.springsecuritytdd.auth.domain.UserRole;
+import com.joel.springsecuritytdd.user.dto.UserDto;
+import com.joel.springsecuritytdd.user.entity.UserEntity;
+import com.joel.springsecuritytdd.user.mock.SpyStubUserStore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DefaultUserServiceTest {
 
-    private UserService sut;
+    private DefaultUserService sut;
     private SpyStubUserStore userStore;
     private UserEntity joel;
     private UserEntity jay;
 
     @BeforeEach
     void setUp() {
-        joel = new UserEntity(
-                "joel@sample.com",
-                "1234",
-                List.of(UserRole.ROLE_ADMIN)
-        );
-        jay = new UserEntity(
-                "jay@sample.com",
-                "5678",
-                List.of(UserRole.ROLE_PLAIN)
-        );
+        joel = UserEntity.builder()
+                .email("joel@sample.com")
+                .password("1234")
+                .roles(Set.of(UserRole.ROLE_ADMIN))
+                .build();
+        jay = UserEntity.builder()
+                .email("jay@sample.com")
+                .password("5678")
+                .roles(Set.of(UserRole.ROLE_PLAIN))
+                .build();
         userStore = new SpyStubUserStore(List.of(joel, jay));
         sut = new DefaultUserService(userStore);
     }
@@ -52,21 +54,11 @@ class DefaultUserServiceTest {
     }
 
     @Test
-    void addUser_이미_존재하는_사용자_이메일로_계정을_생성하면_예외가_발생한다() {
-        assertThrows(UserException.class, () -> sut.addUser(joel.toUserDto()));
-    }
-
-    @Test
     void getUserByEmail_이메일을_통해_사용자를_조회할_수_있다() {
         UserDto user = sut.getUserByEmail(joel.getEmail());
 
 
         assertEquals(joel.getEmail(), user.getEmail());
-    }
-
-    @Test
-    void getUserByEmail_존재하지_않는_사용자를_조회하면_예외가_발생한다() {
-        assertThrows(UserException.class, () -> sut.getUserByEmail("nosuchuser@sample.com"));
     }
 
     @Test
@@ -83,26 +75,31 @@ class DefaultUserServiceTest {
     }
 
     @Test
-    void updateUser_존재하지_않는_사용자의_업데이트를_시도하면_예외가_발생한다() {
-        joel.setEmail("notjoel@sample.com");
-
-
-        assertThrows(UserException.class, () -> sut.updateUser(joel.toUserDto()));
-    }
-
-    @Test
     void deleteUser_사용자를_삭제할_수_있다() {
         sut.deleteUser(joel.toUserDto());
 
 
-        assertThrows(UserException.class, () -> sut.getUserByEmail(joel.getEmail()));
+        assertEquals(joel.getEmail(), userStore.getDeletedUserEmail());
     }
 
     @Test
-    void deleteUser_존재하지_않는_사용자는_삭제할_수_없다() {
-        joel.setEmail("notjoel@sample.com");
+    void loadUserByUsername_올바른_사용자_이메일을_리턴한다() {
+        UserDetails savedJoel = sut.loadUserByUsername(joel.getEmail());
+        UserDetails savedJay = sut.loadUserByUsername(jay.getEmail());
 
 
-        assertThrows(UserException.class, () -> sut.deleteUser(joel.toUserDto()));
+        assertEquals(joel.getEmail(), savedJoel.getUsername());
+        assertEquals(jay.getEmail(), savedJay.getUsername());
+    }
+
+    @Test
+    void loadUserByUsername_올바른_사용자_권한을_리턴한다() {
+        UserDetails savedJoel = sut.loadUserByUsername(joel.getEmail());
+        List<String> userRoles = savedJoel.getAuthorities().stream()
+                .map(auth -> auth.getAuthority())
+                .collect(Collectors.toList());
+
+
+        assertEquals(joel.getRoles().stream().toList().get(0).name(), userRoles.get(0));
     }
 }

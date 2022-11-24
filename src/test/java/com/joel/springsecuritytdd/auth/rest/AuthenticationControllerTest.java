@@ -1,12 +1,11 @@
-package com.joel.springsecuritytdd.auth;
+package com.joel.springsecuritytdd.auth.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joel.springsecuritytdd.auth.domain.UserRole;
-import com.joel.springsecuritytdd.auth.helper.SpyUserService;
-import com.joel.springsecuritytdd.auth.helper.StubJwtGenerator;
-import com.joel.springsecuritytdd.auth.request.SignInRequestDto;
-import com.joel.springsecuritytdd.auth.request.SignupRequestDto;
-import com.joel.springsecuritytdd.auth.rest.AuthenticationController;
+import com.joel.springsecuritytdd.auth.mock.SpyUserService;
+import com.joel.springsecuritytdd.auth.mock.StubJwtGenerator;
+import com.joel.springsecuritytdd.auth.rest.request.SignInRequestDto;
+import com.joel.springsecuritytdd.auth.rest.request.SignupRequestDto;
 import com.joel.springsecuritytdd.auth.token.JwtGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,14 +30,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AuthenticationControllerTest {
 
-    MockMvc sut;
-    SpyUserService userService;
-    AuthenticationManager authenticationManager;
-    PasswordEncoder passwordEncoder;
-    JwtGenerator jwtGenerator;
-    SignupRequestDto signupRequest;
-    SignInRequestDto signInRequest;
-    ObjectMapper mapper = new ObjectMapper();
+    private MockMvc sut;
+    private SpyUserService userService;
+    private AuthenticationManager authenticationManager;
+    private PasswordEncoder passwordEncoder;
+    private JwtGenerator jwtGenerator;
+    private SignupRequestDto signupRequest;
+    private SignInRequestDto signInRequest;
+    private ObjectMapper mapper = new ObjectMapper();
 
 
     @BeforeEach
@@ -56,7 +55,7 @@ class AuthenticationControllerTest {
 
     @Test
     void 회원가입에_성공하면_회원이메일이_응답된다() throws Exception {
-        String email = sut.perform(post("/signup")
+        String email = sut.perform(post("/api/signup")
                         .content(mapper.writeValueAsString(signupRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -70,7 +69,7 @@ class AuthenticationControllerTest {
 
     @Test
     void 회원가입을_하면_암호화된_비밀번호가_저장된다() throws Exception {
-        sut.perform(post("/signup")
+        sut.perform(post("/api/signup")
                         .content(mapper.writeValueAsString(signupRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -86,15 +85,15 @@ class AuthenticationControllerTest {
                 new UsernamePasswordAuthenticationToken(signInRequest.getEmail(), signInRequest.getPassword(), Collections.singletonList(new GrantedAuthority() {
                     @Override
                     public String getAuthority() {
-                        return UserRole.ROLE_USER.toString();
+                        return UserRole.ROLE_PLAIN.toString();
                     }
                 }))
         );
-        sut.perform(post("/signIn")
+        sut.perform(post("/api/signIn")
                 .content(mapper.writeValueAsString(signInRequest))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").value(jwtGenerator.createAccessToken(signInRequest.getEmail(), Collections.singletonList(UserRole.ROLE_USER.toString()))))
-                .andExpect(jsonPath("$.refreshToken").value(jwtGenerator.createRefreshToken(signInRequest.getEmail(), Collections.singletonList(UserRole.ROLE_USER.toString()))));
+                .andExpect(jsonPath("$.accessToken").value(jwtGenerator.createAccessToken(signInRequest.getEmail(), Collections.singletonList(UserRole.ROLE_PLAIN.toString()))))
+                .andExpect(jsonPath("$.refreshToken").value(jwtGenerator.createRefreshToken(signInRequest.getEmail(), Collections.singletonList(UserRole.ROLE_PLAIN.toString()))));
     }
 }

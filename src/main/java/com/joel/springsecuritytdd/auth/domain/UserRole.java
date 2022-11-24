@@ -1,6 +1,6 @@
 package com.joel.springsecuritytdd.auth.domain;
 
-public enum UserAuthRole {
+public enum UserRole {
     ROLE_PLAIN,
     ROLE_ADMIN;
 }

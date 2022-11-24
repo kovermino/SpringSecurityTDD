@@ -1,16 +1,18 @@
 package com.joel.springsecuritytdd.user.converter;
 
 import com.google.gson.Gson;
+import com.joel.springsecuritytdd.auth.domain.UserRole;
 
 import javax.persistence.AttributeConverter;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-public class AuthorityJsonConverter implements AttributeConverter<List<String>, String> {
+public class StringListJsonConverter implements AttributeConverter<Set<UserRole>, String> {
 
     private final Gson gson = new Gson();
 
     @Override
-    public String convertToDatabaseColumn(List<String> strings) {
+    public String convertToDatabaseColumn(Set<UserRole> strings) {
         try
         {
             if (strings == null)
@@ -29,7 +31,7 @@ public class AuthorityJsonConverter implements AttributeConverter<List<String>, 
     }
 
     @Override
-    public List<String> convertToEntityAttribute(String s) {
+    public Set<UserRole> convertToEntityAttribute(String s) {
         try
         {
             if (s == null)
@@ -38,7 +40,8 @@ public class AuthorityJsonConverter implements AttributeConverter<List<String>, 
             }
             else
             {
-                return gson.fromJson(s, List.class);
+                Set<String> roles = gson.fromJson(s, Set.class);
+                return roles.stream().map(UserRole::valueOf).collect(Collectors.toSet());
             }
         }
         catch (Exception ex)

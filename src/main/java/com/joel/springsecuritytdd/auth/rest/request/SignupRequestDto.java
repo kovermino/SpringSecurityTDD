@@ -1,4 +1,4 @@
-package com.joel.springsecuritytdd.auth.request;
+package com.joel.springsecuritytdd.auth.rest.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

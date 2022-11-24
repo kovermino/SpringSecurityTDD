@@ -10,47 +10,48 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
-public class UserModel implements UserDetails {
+public class UserAuthModel implements UserDetails {
     private String email;
+    private String password;
     private List<String> roles;
 
-    public UserModel(String email, List<UserRole> roles) {
+    public UserAuthModel(String email, String password, List<String> userRoles) {
         this.email = email;
-        this.roles = roles.stream().map(UserRole::name).collect(Collectors.toList());
+        this.password = password;
+        this.roles = userRoles;
     }
 
-    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
     @Override
     public String getPassword() {
-        return null;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return this.email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

@@ -1,7 +1,7 @@
-package com.flab.securitydemo.user.mock;
+package com.joel.springsecuritytdd.user.mock;
 
-import com.flab.securitydemo.user.entity.UserEntity;
-import com.flab.securitydemo.user.store.UserStore;
+import com.joel.springsecuritytdd.user.entity.UserEntity;
+import com.joel.springsecuritytdd.user.store.UserStore;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +11,7 @@ public class SpyStubUserStore implements UserStore {
 
     private Map<String, UserEntity> users;
     private String updatedPassword;
+    private String deletedUserEmail;
 
     public SpyStubUserStore(List<UserEntity> users) {
         this.users = users.stream().collect(Collectors.toMap(user -> user.getEmail(), user -> user));
@@ -36,10 +37,12 @@ public class SpyStubUserStore implements UserStore {
 
     @Override
     public void deleteUser(UserEntity user) {
+        this.deletedUserEmail = user.getEmail();
         users.remove(user.getEmail());
     }
 
     public boolean updatedPasswordEquals(String password) {
         return this.updatedPassword.equals(password);
     }
+    public String getDeletedUserEmail() { return this.deletedUserEmail; }
 }

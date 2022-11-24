@@ -1,4 +1,4 @@
-package com.joel.springsecuritytdd.auth.helper;
+package com.joel.springsecuritytdd.auth.mock;
 
 import com.joel.springsecuritytdd.auth.token.JwtGenerator;
 

@@ -1,6 +1,6 @@
-package com.flab.securitydemo.user.store;
+package com.joel.springsecuritytdd.user.store;
 
-import com.flab.securitydemo.user.entity.UserEntity;
+import com.joel.springsecuritytdd.user.entity.UserEntity;
 
 public interface UserStore {
     UserEntity addUser(UserEntity user);
