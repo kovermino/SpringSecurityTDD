@@ -1,6 +1,6 @@
 package com.joel.springsecuritytdd.user.service;
 
-import com.joel.springsecuritytdd.auth.domain.UserAuthModel;
+import com.joel.springsecuritytdd.auth.domain.UserModel;
 import com.joel.springsecuritytdd.auth.domain.UserRole;
 import com.joel.springsecuritytdd.user.dto.UserDto;
 import com.joel.springsecuritytdd.user.entity.UserEntity;
@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +46,6 @@ public class DefaultUserService implements UserService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = userStore.getUserByEmail(username);
-        return new UserAuthModel(user.getEmail(), user.getPassword(), user.getRoles().stream().map(UserRole::name).collect(Collectors.toList()));
+        return new UserModel(user.getEmail(), user.getPassword(), user.getRoles().stream().map(UserRole::name).collect(Collectors.toList()));
     }
 }

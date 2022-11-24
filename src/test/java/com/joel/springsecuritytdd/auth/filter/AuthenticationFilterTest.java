@@ -1,6 +1,6 @@
 package com.joel.springsecuritytdd.auth.filter;
 
-import com.joel.springsecuritytdd.auth.domain.UserAuthModel;
+import com.joel.springsecuritytdd.auth.domain.UserModel;
 import com.joel.springsecuritytdd.auth.domain.UserRole;
 import com.joel.springsecuritytdd.auth.token.DefaultJwtGenerator;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 class AuthenticationFilterTest {
 
     private AuthenticationFilter sut;
-    private UserAuthModel user;
+    private UserModel user;
     private MockHttpServletRequest mockRequest;
     private MockHttpServletResponse mockResponse;
     private MockFilterChain mockFilterChain;
@@ -33,7 +33,7 @@ class AuthenticationFilterTest {
 
     @BeforeEach
     void setUp() {
-        user = new UserAuthModel("joel@sample.com", "samplePassword", Collections.singletonList(UserRole.ROLE_ADMIN.name()));
+        user = new UserModel("joel@sample.com", "samplePassword", Collections.singletonList(UserRole.ROLE_ADMIN.name()));
         userDetailsService = mock(UserDetailsService.class);
         sut = new AuthenticationFilter(userDetailsService);
         mockRequest = new MockHttpServletRequest();

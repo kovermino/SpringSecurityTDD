@@ -1,7 +1,7 @@
 package com.joel.springsecuritytdd.auth.token;
 
 import com.google.gson.Gson;
-import com.joel.springsecuritytdd.auth.domain.UserAuthModel;
+import com.joel.springsecuritytdd.auth.domain.UserModel;
 import com.joel.springsecuritytdd.auth.domain.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -21,19 +21,19 @@ class DefaultJwtGeneratorTest {
     private DefaultJwtGenerator sut;
     private String secretKey;
     private byte[] secretKeyBytes;
-    private UserAuthModel userAuthModel;
+    private UserModel userModel;
 
     @BeforeEach
     void setUp() {
         secretKey = "66409A951C506063DB6BEA51B01EFC7F1B8C27EFD671DFFE162B75FCD8F6BCFE";
         secretKeyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
-        userAuthModel = new UserAuthModel("sample@sample.com", "samplePassword", Collections.singletonList(UserRole.ROLE_PLAIN.name()));
+        userModel = new UserModel("sample@sample.com", "samplePassword", Collections.singletonList(UserRole.ROLE_PLAIN.name()));
         sut = new DefaultJwtGenerator();
     }
 
     @Test
     void createAccessToken_secretKey로_signing된_accessToken을_생성한다() {
-        String accessToken = sut.createAccessToken(userAuthModel.getEmail(), null);
+        String accessToken = sut.createAccessToken(userModel.getEmail(), null);
 
 
         assertThrows(UnsupportedJwtException.class, () -> {
@@ -47,7 +47,7 @@ class DefaultJwtGeneratorTest {
 
     @Test
     void createAccessToken_이메일을_사용해서_accessToken을_생성한다() {
-        String accessToken = sut.createAccessToken(userAuthModel.getEmail(), null);
+        String accessToken = sut.createAccessToken(userModel.getEmail(), null);
 
 
         String subject = Jwts.parserBuilder()
@@ -58,12 +58,12 @@ class DefaultJwtGeneratorTest {
                 .getSubject();
 
 
-        assertEquals(userAuthModel.getEmail(), subject);
+        assertEquals(userModel.getEmail(), subject);
     }
 
     @Test
     void createAccessToken_발행일자를_사용해서_accessToken을_생성한다() {
-        String accessToken = sut.createAccessToken(userAuthModel.getEmail(), null);
+        String accessToken = sut.createAccessToken(userModel.getEmail(), null);
 
 
         Date issuedAt = Jwts.parserBuilder()
@@ -79,7 +79,7 @@ class DefaultJwtGeneratorTest {
 
     @Test
     void createAccessToken_만료시간이_30분인_accessToken을_생성한다() {
-        String accessToken = sut.createAccessToken(userAuthModel.getEmail(), null);
+        String accessToken = sut.createAccessToken(userModel.getEmail(), null);
 
 
         Claims claims = Jwts.parserBuilder()
@@ -95,7 +95,7 @@ class DefaultJwtGeneratorTest {
 
     @Test
     void createAccessToken_UserRole을_가지고_있는_accessToken을_생성한다() {
-        String accessToken = sut.createAccessToken(userAuthModel.getEmail(), userAuthModel.getRoles());
+        String accessToken = sut.createAccessToken(userModel.getEmail(), userModel.getRoles());
 
 
         Claims claims = Jwts.parserBuilder()
@@ -110,7 +110,7 @@ class DefaultJwtGeneratorTest {
 
     @Test
     void createRefreshToken_secretKey로_signing된_refreshToken을_생성한다() {
-        String refreshToken = sut.createRefreshToken(userAuthModel.getEmail(), null);
+        String refreshToken = sut.createRefreshToken(userModel.getEmail(), null);
 
 
         assertThrows(UnsupportedJwtException.class, () -> {
@@ -124,7 +124,7 @@ class DefaultJwtGeneratorTest {
 
     @Test
     void createRefreshToken_이메일을_사용해서_refreshToken을_생성한다() {
-        String refreshToken = sut.createRefreshToken(userAuthModel.getEmail(), null);
+        String refreshToken = sut.createRefreshToken(userModel.getEmail(), null);
 
 
         String subject = Jwts.parserBuilder()
@@ -135,12 +135,12 @@ class DefaultJwtGeneratorTest {
                 .getSubject();
 
 
-        assertEquals(userAuthModel.getEmail(), subject);
+        assertEquals(userModel.getEmail(), subject);
     }
 
     @Test
     void createRefreshToken_발행일자를_사용해서_refreshToken을_생성한다() {
-        String refreshToken = sut.createRefreshToken(userAuthModel.getEmail(), null);
+        String refreshToken = sut.createRefreshToken(userModel.getEmail(), null);
 
 
         Date issuedAt = Jwts.parserBuilder()
@@ -156,7 +156,7 @@ class DefaultJwtGeneratorTest {
 
     @Test
     void createRefreshToken_만료시간이_1시간인_refreshToken을_생성한다() {
-        String refreshToken = sut.createRefreshToken(userAuthModel.getEmail(), null);
+        String refreshToken = sut.createRefreshToken(userModel.getEmail(), null);
 
 
         Claims claims = Jwts.parserBuilder()
@@ -172,7 +172,7 @@ class DefaultJwtGeneratorTest {
 
     @Test
     void createRefreshToken_UserRole을_가지고_있는_refreshToken을_생성한다() {
-        String refreshToken = sut.createRefreshToken(userAuthModel.getEmail(), userAuthModel.getRoles());
+        String refreshToken = sut.createRefreshToken(userModel.getEmail(), userModel.getRoles());
 
 
         Claims claims = Jwts.parserBuilder()

@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
-public class UserAuthModel implements UserDetails {
+public class UserModel implements UserDetails {
     private String email;
     private String password;
     private List<String> roles;
 
-    public UserAuthModel(String email, String password, List<String> userRoles) {
+    public UserModel(String email, String password, List<String> userRoles) {
         this.email = email;
         this.password = password;
         this.roles = userRoles;
